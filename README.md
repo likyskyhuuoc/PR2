@@ -12,5 +12,5 @@ This activity is realised collectively by two persons: Daura Hernández Díaz an
 <li><strong>PR2 R code.R</strong>：Source code of data analysis</li>
 <li><strong>PR2 Data analysis.rmd</strong>：R Markdown file of the code</li>
 <li><strong>PR2 Data_analysis.html</strong>：Data analysis outputs</li>
-<li><strongProject report ver 1.1.docx</strong>：Formal report of the study</li>
+<li><strong>Project report ver 1.1.docx</strong>：Formal report of the study</li>
 </ul>
