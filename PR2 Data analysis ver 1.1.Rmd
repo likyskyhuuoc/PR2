@@ -1,0 +1,877 @@
+---
+title: 'PR2 IMPLEMENTATION REPORT : CLEANING AND VALIDATION OF DATA'
+author: "Daura Hernández Díaz ; Xiaowei Cai"
+date: "2019/6/10"
+output: 
+  html_document: 
+    code_folding: hide
+    theme: readable
+    toc: yes
+    toc_float: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_knit$set(root.dir = "./Original datasets")
+```
+
+#Load R libraries
+
+```{r}
+library(RcmdrMisc)
+library(stringr)
+library(Hmisc)
+library(corrplot)
+library(MVN)
+library(gvlma)
+library(stargazer)
+library(easyGgplot2)
+library(psych)
+library(car)
+library(caret)
+library(mgcv)
+library(lmtest)
+library(rpart)
+library(rpart.plot)
+```
+
+#Load data and clean data
+
+```{r}
+#Load the datasets Casa Palacio-Puerto del Rosario2011.
+Fuerteventura_2011_1 <- read.csv("Casa Palacio-Puerto del Rosario20111.csv",encoding="UTF-8")
+Fuerteventura_2011_2 <- read.csv("Casa Palacio-Puerto del Rosario20112.csv",encoding="UTF-8")
+Fuerteventura_2011_3 <- read.csv("Casa Palacio-Puerto del Rosario20113.csv",encoding="UTF-8")
+Fuerteventura_2011_4 <- read.csv("Casa Palacio-Puerto del Rosario20114.csv",encoding="UTF-8")
+#Combine the datasets.
+Fuerteventura_2011 <- cbind(cbind(Fuerteventura_2011_1,Fuerteventura_2011_2),cbind(Fuerteventura_2011_3,Fuerteventura_2011_4))
+#Create a new variable to assign the location of weather station.
+Fuerteventura_2011$YEAR <- "2011"
+
+#Load the datasets Casa Palacio-Puerto del Rosario2012.
+Fuerteventura_2012_1 <- read.csv("Casa Palacio-Puerto del Rosario20121.csv",encoding="UTF-8")
+Fuerteventura_2012_2 <- read.csv("Casa Palacio-Puerto del Rosario20122.csv",encoding="UTF-8")
+Fuerteventura_2012_3 <- read.csv("Casa Palacio-Puerto del Rosario20123.csv",encoding="UTF-8")
+Fuerteventura_2012_4 <- read.csv("Casa Palacio-Puerto del Rosario20124.csv",encoding="UTF-8")
+#Combine the datasets.
+Fuerteventura_2012 <- cbind(cbind(Fuerteventura_2012_1,Fuerteventura_2012_2),cbind(Fuerteventura_2012_3,Fuerteventura_2012_4))
+#Create a new variable to assign the location of weather station.
+Fuerteventura_2012$YEAR <- "2012"
+
+
+#Load the datasets Casa Palacio-Puerto del Rosario2013.
+Fuerteventura_2013_1 <- read.csv("Casa Palacio-Puerto del Rosario20131.csv",encoding="UTF-8")
+Fuerteventura_2013_2 <- read.csv("Casa Palacio-Puerto del Rosario20132.csv",encoding="UTF-8")
+Fuerteventura_2013_3 <- read.csv("Casa Palacio-Puerto del Rosario20133.csv",encoding="UTF-8")
+Fuerteventura_2013_4 <- read.csv("Casa Palacio-Puerto del Rosario20134.csv",encoding="UTF-8")
+#Combine the datasets.
+Fuerteventura_2013 <- cbind(cbind(Fuerteventura_2013_1,Fuerteventura_2013_2),cbind(Fuerteventura_2013_3,Fuerteventura_2013_4))
+#Create a new variable to assign the location of weather station.
+Fuerteventura_2013$YEAR <- "2013"
+
+
+#Load the datasets Casa Palacio-Puerto del Rosario2014.
+Fuerteventura_2014_1 <- read.csv("Casa Palacio-Puerto del Rosario20141.csv",encoding="UTF-8")
+Fuerteventura_2014_2 <- read.csv("Casa Palacio-Puerto del Rosario20142.csv",encoding="UTF-8")
+Fuerteventura_2014_3 <- read.csv("Casa Palacio-Puerto del Rosario20143.csv",encoding="UTF-8")
+Fuerteventura_2014_4 <- read.csv("Casa Palacio-Puerto del Rosario20144.csv",encoding="UTF-8")
+#Combine the datasets.
+Fuerteventura_2014 <- cbind(cbind(Fuerteventura_2014_1,Fuerteventura_2014_2),cbind(Fuerteventura_2014_3,Fuerteventura_2014_4))
+#Create a new variable to assign the location of weather station.
+Fuerteventura_2014$YEAR <- "2014"
+
+
+#Load the datasets Casa Palacio-Puerto del Rosario2015.
+Fuerteventura_2015_1 <- read.csv("Casa Palacio-Puerto del Rosario20151.csv",encoding="UTF-8")
+Fuerteventura_2015_2 <- read.csv("Casa Palacio-Puerto del Rosario20152.csv",encoding="UTF-8")
+Fuerteventura_2015_3 <- read.csv("Casa Palacio-Puerto del Rosario20153.csv",encoding="UTF-8")
+Fuerteventura_2015_4 <- read.csv("Casa Palacio-Puerto del Rosario20154.csv",encoding="UTF-8")
+#Combine the datasets.
+Fuerteventura_2015 <- cbind(cbind(Fuerteventura_2015_1,Fuerteventura_2015_2),cbind(Fuerteventura_2015_3,Fuerteventura_2015_4))
+#Create a new variable to assign the location of weather station.
+Fuerteventura_2015$YEAR <- "2015"
+
+
+#Load the datasets Casa Palacio-Puerto del Rosario2016.
+Fuerteventura_2016_1 <- read.csv("Casa Palacio-Puerto del Rosario20161.csv",encoding="UTF-8")
+Fuerteventura_2016_2 <- read.csv("Casa Palacio-Puerto del Rosario20162.csv",encoding="UTF-8")
+Fuerteventura_2016_3 <- read.csv("Casa Palacio-Puerto del Rosario20163.csv",encoding="UTF-8")
+Fuerteventura_2016_4 <- read.csv("Casa Palacio-Puerto del Rosario20164.csv",encoding="UTF-8")
+#Combine the datasets.
+Fuerteventura_2016 <- cbind(cbind(Fuerteventura_2016_1,Fuerteventura_2016_2),cbind(Fuerteventura_2016_3,Fuerteventura_2016_4))
+#Create a new variable to assign the location of weather station.
+Fuerteventura_2016$YEAR <- "2016"
+
+
+#Load the datasets Casa Palacio-Puerto del Rosario2017.
+Fuerteventura_2017_1 <- read.csv("Casa Palacio-Puerto del Rosario20171.csv",encoding="UTF-8")
+Fuerteventura_2017_2 <- read.csv("Casa Palacio-Puerto del Rosario20172.csv",encoding="UTF-8")
+Fuerteventura_2017_3 <- read.csv("Casa Palacio-Puerto del Rosario20173.csv",encoding="UTF-8")
+Fuerteventura_2017_4 <- read.csv("Casa Palacio-Puerto del Rosario20174.csv",encoding="UTF-8")
+#Combine the datasets.
+Fuerteventura_2017 <- cbind(cbind(Fuerteventura_2017_1,Fuerteventura_2017_2),cbind(Fuerteventura_2017_3,Fuerteventura_2017_4))
+#Create a new variable to assign the location of weather station.
+Fuerteventura_2017$YEAR <- "2017"
+
+
+#Load the datasets Casa Palacio-Puerto del Rosario2018.
+Fuerteventura_2018_1 <- read.csv("Casa Palacio-Puerto del Rosario20181.csv",encoding="UTF-8")
+Fuerteventura_2018_2 <- read.csv("Casa Palacio-Puerto del Rosario20182.csv",encoding="UTF-8")
+Fuerteventura_2018_3 <- read.csv("Casa Palacio-Puerto del Rosario20183.csv",encoding="UTF-8")
+Fuerteventura_2018_4 <- read.csv("Casa Palacio-Puerto del Rosario20184.csv",encoding="UTF-8")
+#Combine the datasets.
+Fuerteventura_2018 <- cbind(cbind(Fuerteventura_2018_1,Fuerteventura_2018_2),cbind(Fuerteventura_2018_3,Fuerteventura_2018_4))
+#Create a new variable to assign the location of weather station.
+Fuerteventura_2018$YEAR <- "2018"
+
+
+
+clean_data <- function(dataset){
+
+  
+  #Rename some variables
+  dataset$DATE <- dataset$Fecha
+  dataset$SO2 <- dataset[ , which(str_detect(names(dataset), pattern = "SO2"))]
+  dataset$NO <- dataset[ , which(str_detect(names(dataset), pattern = "NO..μg.m3."))]
+  dataset$NO2 <- dataset[ , which(str_detect(names(dataset), pattern = "NO2..μg.m3."))]
+  dataset$NOX <- dataset[ , which(str_detect(names(dataset), pattern = "NOX..μg.m3."))]
+  dataset$PM10 <- dataset[ , which(str_detect(names(dataset), pattern = "PM10"))]
+  dataset$CO <- dataset[ , which(str_detect(names(dataset), pattern = "CO"))]
+  dataset$PM2.5 <- dataset[ , which(str_detect(names(dataset), pattern = "PM2.5"))]
+  dataset$O3 <- dataset[ , which(str_detect(names(dataset), pattern = "O3"))]
+  dataset$VV <- dataset[ , which(str_detect(names(dataset), pattern = "VV"))]
+  dataset$DD <- dataset[ , which(str_detect(names(dataset), pattern = "DD"))]
+  dataset$TMP <- dataset[ , which(str_detect(names(dataset), pattern = "TMP"))]
+  dataset$HR <- dataset[ , which(str_detect(names(dataset), pattern = "HR"))]
+  dataset$PRB <- dataset[ , which(str_detect(names(dataset), pattern = "PRB"))]
+  
+  #Rename some columns
+  dataset$DATE <- dataset$Fecha
+  dataset$HOUR <- dataset$Hora
+  
+  #Include the necessary variables into the dataset.
+  dataset <-  dataset[,c("DATE","HOUR","YEAR","SO2","NO","NO2","NOX","O3","CO","PM10","PM2.5","VV","DD","TMP","HR","PRB")]
+  
+
+  
+  return(dataset)
+}
+
+#Conduct the data cleaning process for each of the datasets.
+Fuerteventura_2011 <- clean_data(Fuerteventura_2011)
+Fuerteventura_2012 <- clean_data(Fuerteventura_2012)
+Fuerteventura_2013 <- clean_data(Fuerteventura_2013)
+Fuerteventura_2014 <- clean_data(Fuerteventura_2014)
+Fuerteventura_2015 <- clean_data(Fuerteventura_2015)
+Fuerteventura_2016 <- clean_data(Fuerteventura_2016)
+Fuerteventura_2017 <- clean_data(Fuerteventura_2017)
+Fuerteventura_2018 <- clean_data(Fuerteventura_2018)
+
+
+#Bind the observations from different datasets in one unique dataset.
+provisional1 <- rbind(Fuerteventura_2011,Fuerteventura_2012)
+provisional2 <- rbind(Fuerteventura_2013,Fuerteventura_2014)
+provisional3 <- rbind(Fuerteventura_2015,Fuerteventura_2016)
+provisional4 <- rbind(Fuerteventura_2017,Fuerteventura_2018)
+provisional5 <- rbind(provisional1,provisional2)
+provisional6 <- rbind(provisional3,provisional4)
+Canarydataset <-rbind(provisional5,provisional6)
+
+#Configure levels for the variable "YEAR".
+Canarydataset$YEAR <- factor(Canarydataset$YEAR,levels = c("2011","2012","2013","2014","2015","2016","2017","2018"))
+
+#Create a new variable "MONTH".
+Canarydataset$MONTH <- ifelse(str_detect(Canarydataset$DATE, pattern = "-01-"),"January",
+                              ifelse(str_detect(Canarydataset$DATE, pattern = "-02-"),"February",
+                                     ifelse(str_detect(Canarydataset$DATE, pattern = "-03-"),"March",
+                                            ifelse(str_detect(Canarydataset$DATE, pattern = "-04-"),"April",
+                                                   ifelse(str_detect(Canarydataset$DATE, pattern = "-05-"),"May",
+                                                          ifelse(str_detect(Canarydataset$DATE, pattern = "-06-"),"June",
+                                                                 ifelse(str_detect(Canarydataset$DATE, pattern = "-07-"),"July",
+                                                                        ifelse(str_detect(Canarydataset$DATE, pattern = "-08-"),"August",
+                                                                               ifelse(str_detect(Canarydataset$DATE, pattern = "-09-"),"September",
+                                                                                      ifelse(str_detect(Canarydataset$DATE, pattern = "-10-"),"October",
+                                                                                             ifelse(str_detect(Canarydataset$DATE, pattern = "-11-"),"November",
+                                                                                                           "December")))))))))))
+
+#Configure levels for the variable "MONTH".
+Canarydataset$MONTH <- factor(Canarydataset$MONTH,levels = c("January","February","March","April","May","June","July","August","September","October","November","December"))
+
+#Detect outliers and replace them by NA.
+outlier_SO2 <- which(Canarydataset$SO2 %in% boxplot.stats(Canarydataset$SO2)$out)
+Canarydataset[outlier_SO2,"SO2"] <- NA
+
+outlier_NO <- which(Canarydataset$NO %in% boxplot.stats(Canarydataset$NO)$out)
+Canarydataset[outlier_NO,"NO"] <- NA
+
+outlier_NO2 <- which(Canarydataset$NO2 %in% boxplot.stats(Canarydataset$NO2)$out)
+Canarydataset[outlier_NO2,"NO2"] <- NA
+
+outlier_PM10 <- which(Canarydataset$PM10 %in% boxplot.stats(Canarydataset$PM10)$out)
+Canarydataset[outlier_PM10,"PM10"] <- NA
+
+outlier_NOX <- which(Canarydataset$NOX %in% boxplot.stats(Canarydataset$NOX)$out)
+Canarydataset[outlier_NOX,"NOX"] <- NA
+
+outlier_CO <- which(Canarydataset$CO %in% boxplot.stats(Canarydataset$CO)$out)
+Canarydataset[outlier_CO,"CO"] <- NA
+
+outlier_PM2.5 <- which(Canarydataset$PM2.5 %in% boxplot.stats(Canarydataset$PM2.5)$out)
+Canarydataset[outlier_PM2.5,"PM2.5"] <- NA
+
+outlier_O3 <- which(Canarydataset$O3 %in% boxplot.stats(Canarydataset$O3)$out)
+Canarydataset[outlier_O3,"O3"] <- NA
+
+outlier_VV <- which(Canarydataset$VV %in% boxplot.stats(Canarydataset$VV)$out)
+Canarydataset[outlier_VV,"VV"] <- NA
+
+outlier_DD <- which(Canarydataset$DD %in% boxplot.stats(Canarydataset$DD)$out)
+Canarydataset[outlier_DD,"DD"] <- NA
+
+outlier_TMP <- which(Canarydataset$TMP %in% boxplot.stats(Canarydataset$TMP)$out)
+Canarydataset[outlier_TMP,"TMP"] <- NA
+
+outlier_HR <- which(Canarydataset$HR %in% boxplot.stats(Canarydataset$HR)$out)
+Canarydataset[outlier_HR,"HR"] <- NA
+
+outlier_PRB <- which(Canarydataset$PRB %in% boxplot.stats(Canarydataset$PRB)$out)
+Canarydataset[outlier_PRB,"PRB"] <- NA
+
+#Replace the missing values with the mean values in each of the numerical variables.
+Canarydataset$SO2[is.na(Canarydataset$SO2)] <- mean(Canarydataset$SO2,na.rm=T)
+Canarydataset$NO[is.na(Canarydataset$NO)] <- mean(Canarydataset$NO,na.rm=T)
+Canarydataset$NO2[is.na(Canarydataset$NO2)] <- mean(Canarydataset$NO2,na.rm=T)
+Canarydataset$PM10[is.na(Canarydataset$PM10)] <- mean(Canarydataset$PM10,na.rm=T)
+Canarydataset$NOX[is.na(Canarydataset$NOX)] <- mean(Canarydataset$NOX,na.rm=T)
+Canarydataset$CO[is.na(Canarydataset$CO)] <- mean(Canarydataset$CO,na.rm=T)
+Canarydataset$PM2.5[is.na(Canarydataset$PM2.5)] <- mean(Canarydataset$PM2.5,na.rm=T)
+Canarydataset$O3[is.na(Canarydataset$O3)] <- mean(Canarydataset$O3,na.rm=T)
+Canarydataset$VV[is.na(Canarydataset$VV)] <- mean(Canarydataset$VV,na.rm=T)
+Canarydataset$DD[is.na(Canarydataset$DD)] <- mean(Canarydataset$DD,na.rm=T)
+Canarydataset$TMP[is.na(Canarydataset$TMP)] <- mean(Canarydataset$TMP,na.rm=T)
+Canarydataset$HR[is.na(Canarydataset$HR)] <- mean(Canarydataset$HR,na.rm=T)
+Canarydataset$PRB[is.na(Canarydataset$PRB)] <- mean(Canarydataset$PRB,na.rm=T)
+
+
+```
+
+#Descriptive data analysis
+
+##SO2
+
+```{r}
+#Concentration of SO2 - μg / m³
+summary(Canarydataset$SO2)
+ggplot(Canarydataset, aes(x=SO2))+geom_histogram(binwidth=1,fill="#EE8420")
+```
+
+##NO
+
+```{r}
+#Concentration of NO - μg / m³
+summary(Canarydataset$NO)
+ggplot(Canarydataset, aes(x=NO))+geom_histogram(binwidth=1,fill="#EE8420")
+```
+
+##NO2
+
+```{r}
+#Concentration of NO2 - μg / m³
+summary(Canarydataset$NO2)
+ggplot(Canarydataset, aes(x=NO2))+geom_histogram(binwidth=1,fill="#EE8420")
+```
+
+##NOX
+
+```{r}
+#Concentration of NOX - μg / m³
+summary(Canarydataset$NOX)
+ggplot(Canarydataset, aes(x=NOX))+geom_histogram(binwidth=1,fill="#EE8420")
+```
+
+##CO
+
+```{r}
+#Concentration of CO - mg / m³
+summary(Canarydataset$CO)
+ggplot(Canarydataset, aes(x=CO))+geom_histogram(binwidth=0.1,fill="#EE8420")
+```
+
+##O3
+
+```{r}
+#Concentration of O3 - μg / m³
+summary(Canarydataset$O3)
+ggplot(Canarydataset, aes(x=O3))+geom_histogram(binwidth=1,fill="#EE8420")
+```
+
+##PM10
+
+```{r}
+#Particulate matter (PM10) - μg / m³
+summary(Canarydataset$PM10)
+ggplot(Canarydataset, aes(x=PM10))+geom_histogram(binwidth=1,fill="#EE8420")
+```
+
+##PM2.5
+
+```{r}
+#Particulate matter (PM2.5) - μg / m³
+summary(Canarydataset$PM2.5)
+ggplot(Canarydataset, aes(x=PM2.5))+geom_histogram(binwidth=1,fill="#EE8420")
+```
+
+##Wind speed
+
+```{r}
+#Wind speed - m / s
+summary(Canarydataset$VV)
+ggplot(Canarydataset, aes(x=VV))+geom_histogram(binwidth=1,fill="#26C4BB")
+```
+
+##Wind direction
+
+```{r}
+#Wind direction - Grd
+summary(Canarydataset$DD)
+ggplot(Canarydataset, aes(x=DD))+geom_histogram(binwidth=20,fill="#26C4BB")
+```
+
+##Average temperature
+
+```{r}
+#Average temperature - ºC
+summary(Canarydataset$TMP)
+ggplot(Canarydataset, aes(x=TMP))+geom_histogram(binwidth=1,fill="#26C4BB")
+```
+
+##Relative humidity
+
+```{r}
+#Relative humidity -%
+summary(Canarydataset$HR)
+ggplot(Canarydataset, aes(x=HR))+geom_histogram(binwidth=1,fill="#26C4BB")
+```
+
+##Barometric pressure
+
+```{r}
+#Barometric pressure - mb
+summary(Canarydataset$PRB)
+ggplot(Canarydataset, aes(x=PRB))+geom_histogram(binwidth=1,fill="#26C4BB")
+```
+
+##Summary of descriptive statistics
+
+```{r}
+numSummary(Canarydataset[,c("SO2","NO","NO2","NOX","O3","CO","PM10","PM2.5","VV","DD","TMP","HR","PRB"
+), drop=FALSE], statistics=c("mean", "sd", "quantiles", "skewness", "kurtosis"), 
+quantiles=c(0,.25,.5,.75,1), type="2")
+```
+
+##Boxplot by year
+
+```{r}
+#Boxplots for each year
+ggplot(Canarydataset, aes(x=YEAR, y=SO2)) + geom_boxplot()+geom_smooth()
+ggplot(Canarydataset, aes(x=YEAR, y=NO)) + geom_boxplot()+geom_smooth()
+ggplot(Canarydataset, aes(x=YEAR, y=NO2)) + geom_boxplot()+geom_smooth()
+ggplot(Canarydataset, aes(x=YEAR, y=NOX)) + geom_boxplot()+geom_smooth()
+ggplot(Canarydataset, aes(x=YEAR, y=O3)) + geom_boxplot()+geom_smooth()
+ggplot(Canarydataset, aes(x=YEAR, y=CO)) + geom_boxplot()+geom_smooth()
+ggplot(Canarydataset, aes(x=YEAR, y=PM10)) + geom_boxplot()+geom_smooth()
+ggplot(Canarydataset, aes(x=YEAR, y=PM2.5)) + geom_boxplot()+geom_smooth()
+ggplot(Canarydataset, aes(x=YEAR, y=VV)) + geom_boxplot()+geom_smooth()
+ggplot(Canarydataset, aes(x=YEAR, y=DD)) + geom_boxplot()+geom_smooth()
+ggplot(Canarydataset, aes(x=YEAR, y=TMP)) + geom_boxplot()+geom_smooth()
+ggplot(Canarydataset, aes(x=YEAR, y=HR)) + geom_boxplot()+geom_smooth()
+ggplot(Canarydataset, aes(x=YEAR, y=PRB)) + geom_boxplot()+geom_smooth()
+```
+
+##Boxplot by month
+
+```{r}
+#Boxplots for each month
+ggplot(Canarydataset, aes(x=MONTH, y=SO2)) + geom_boxplot()+theme(axis.text.x = element_text(angle = 50, hjust = 1))
+ggplot(Canarydataset, aes(x=MONTH, y=NO)) + geom_boxplot()+theme(axis.text.x = element_text(angle = 50, hjust = 1))
+ggplot(Canarydataset, aes(x=MONTH, y=NO2)) + geom_boxplot()+theme(axis.text.x = element_text(angle = 50, hjust = 1))
+ggplot(Canarydataset, aes(x=MONTH, y=NOX)) + geom_boxplot()+theme(axis.text.x = element_text(angle = 50, hjust = 1))
+ggplot(Canarydataset, aes(x=MONTH, y=O3)) + geom_boxplot()+theme(axis.text.x = element_text(angle = 50, hjust = 1))
+ggplot(Canarydataset, aes(x=MONTH, y=CO)) + geom_boxplot()+theme(axis.text.x = element_text(angle = 50, hjust = 1))
+ggplot(Canarydataset, aes(x=MONTH, y=PM10)) + geom_boxplot()+theme(axis.text.x = element_text(angle = 50, hjust = 1))
+ggplot(Canarydataset, aes(x=MONTH, y=PM2.5)) + geom_boxplot()+theme(axis.text.x = element_text(angle = 50, hjust = 1))
+ggplot(Canarydataset, aes(x=MONTH, y=VV)) + geom_boxplot()+theme(axis.text.x = element_text(angle = 50, hjust = 1))
+ggplot(Canarydataset, aes(x=MONTH, y=DD)) + geom_boxplot()+theme(axis.text.x = element_text(angle = 50, hjust = 1))
+ggplot(Canarydataset, aes(x=MONTH, y=TMP)) + geom_boxplot()+theme(axis.text.x = element_text(angle = 50, hjust = 1))
+ggplot(Canarydataset, aes(x=MONTH, y=HR)) + geom_boxplot()+theme(axis.text.x = element_text(angle = 50, hjust = 1))
+ggplot(Canarydataset, aes(x=MONTH, y=PRB)) + geom_boxplot()+theme(axis.text.x = element_text(angle = 50, hjust = 1))
+
+```
+
+#Normality test
+
+```{r}
+Canarydataset_NUME <- Canarydataset[,4:16]
+MVN::mvn(Canarydataset_NUME)
+```
+
+#Homogeneity test
+
+##YEAR
+
+```{r}
+fligner.test(Canarydataset$SO2,Canarydataset$YEAR)
+fligner.test(Canarydataset$NO,Canarydataset$YEAR)
+fligner.test(Canarydataset$NO2,Canarydataset$YEAR)
+fligner.test(Canarydataset$NOX,Canarydataset$YEAR)
+fligner.test(Canarydataset$O3,Canarydataset$YEAR)
+fligner.test(Canarydataset$CO,Canarydataset$YEAR)
+fligner.test(Canarydataset$PM10,Canarydataset$YEAR)
+fligner.test(Canarydataset$PM2.5,Canarydataset$YEAR)
+fligner.test(Canarydataset$VV,Canarydataset$YEAR)
+fligner.test(Canarydataset$DD,Canarydataset$YEAR)
+fligner.test(Canarydataset$TMP,Canarydataset$YEAR)
+fligner.test(Canarydataset$HR,Canarydataset$YEAR)
+fligner.test(Canarydataset$PRB,Canarydataset$YEAR)
+```
+
+##MONTH
+
+```{r}
+fligner.test(Canarydataset$SO2,Canarydataset$MONTH)
+fligner.test(Canarydataset$NO,Canarydataset$MONTH)
+fligner.test(Canarydataset$NO2,Canarydataset$MONTH)
+fligner.test(Canarydataset$NOX,Canarydataset$MONTH)
+fligner.test(Canarydataset$O3,Canarydataset$MONTH)
+fligner.test(Canarydataset$CO,Canarydataset$MONTH)
+fligner.test(Canarydataset$PM10,Canarydataset$MONTH)
+fligner.test(Canarydataset$PM2.5,Canarydataset$MONTH)
+fligner.test(Canarydataset$VV,Canarydataset$MONTH)
+fligner.test(Canarydataset$DD,Canarydataset$MONTH)
+fligner.test(Canarydataset$TMP,Canarydataset$MONTH)
+fligner.test(Canarydataset$HR,Canarydataset$MONTH)
+fligner.test(Canarydataset$PRB,Canarydataset$MONTH)
+```
+
+#Correlation analysis
+
+```{r}
+numerical_items <- Canarydataset[,c("SO2","NO","NO2","NOX","O3","CO","PM10","PM2.5","VV","DD","TMP","HR","PRB")]
+correlation_numerical_items <- cor(numerical_items,method =  "spearman")
+corrplot.mixed(correlation_numerical_items, order = "original")
+```
+
+#Kruskal-Wallis test
+
+##YEAR
+
+```{r}
+kruskal.test(SO2 ~ YEAR,data= Canarydataset)
+kruskal.test(NO ~ YEAR,data= Canarydataset)
+kruskal.test(NO2 ~ YEAR,data= Canarydataset)
+kruskal.test(NOX ~ YEAR,data= Canarydataset)
+kruskal.test(CO ~ YEAR,data= Canarydataset)
+kruskal.test(O3 ~ YEAR,data= Canarydataset)
+kruskal.test(PM10 ~ YEAR,data= Canarydataset)
+kruskal.test(PM2.5 ~ YEAR,data= Canarydataset)
+kruskal.test(VV ~ YEAR,data= Canarydataset)
+kruskal.test(DD ~ YEAR,data= Canarydataset)
+kruskal.test(TMP ~ YEAR,data= Canarydataset)
+kruskal.test(HR ~ YEAR,data= Canarydataset)
+kruskal.test(PRB ~ YEAR,data= Canarydataset)
+```
+
+##MONTH
+
+```{r}
+kruskal.test(SO2 ~ MONTH,data= Canarydataset)
+kruskal.test(NO ~ MONTH,data= Canarydataset)
+kruskal.test(NO2 ~ MONTH,data= Canarydataset)
+kruskal.test(NOX ~ MONTH,data= Canarydataset)
+kruskal.test(CO ~ MONTH,data= Canarydataset)
+kruskal.test(O3 ~ MONTH,data= Canarydataset)
+kruskal.test(PM10 ~ MONTH,data= Canarydataset)
+kruskal.test(PM2.5 ~ MONTH,data= Canarydataset)
+kruskal.test(VV ~ MONTH,data= Canarydataset)
+kruskal.test(DD ~ MONTH,data= Canarydataset)
+kruskal.test(TMP ~ MONTH,data= Canarydataset)
+kruskal.test(HR ~ MONTH,data= Canarydataset)
+kruskal.test(PRB ~ MONTH,data= Canarydataset)
+```
+
+#Spliting dataset
+
+```{r}
+#Establish a training set and a verification set.
+set.seed(1)
+sample <- sample.int(n = nrow(Canarydataset), size = floor(0.50*nrow(Canarydataset)), replace = F)
+Canarydataset_training <- Canarydataset[sample, ]
+Canarydataset_verification  <- Canarydataset[-sample, ]
+```
+
+#Linal regression models
+
+##Model1(Dependent variable: SO2)
+
+```{r}
+lineal_model_SO2 <- lm(log(SO2+1) ~ NO+NO2+NOX+O3+PM2.5+VV,data=Canarydataset_training)
+summary(gvlma(lineal_model_SO2))
+```
+
+
+##Model2(Dependent variable: NO)
+
+```{r}
+lineal_model_NO <- lm(log(NO+1) ~ NO2+NOX+O3+HR+PRB,data=Canarydataset_training)
+summary(gvlma(lineal_model_NO))
+```
+
+##Model3(Dependent variable: NO2)
+
+```{r}
+lineal_model_NO2 <- lm(log(NO2+1) ~ SO2+NO+NOX+O3+HR+PRB,data=Canarydataset_training)
+summary(gvlma(lineal_model_NO2))
+```
+
+##Model4(Dependent variable: NOX)
+
+```{r}
+lineal_model_NOX <- lm(log(NOX+1) ~ SO2+NO+NO2+O3+HR+PRB,data=Canarydataset_training)
+summary(gvlma(lineal_model_NOX))
+```
+
+##Model5(Dependent variable: O3)
+
+```{r}
+lineal_model_O3 <- lm(log(O3+1) ~ SO2+NO+NO2+NOX+HR+PRB,data=Canarydataset_training)
+summary(gvlma(lineal_model_O3))
+```
+
+##Model6(Dependent variable: CO)
+
+```{r}
+lineal_model_CO <- lm(log(CO+1) ~ NO+NO2+NOX+PM2.5+DD+HR,data=Canarydataset_training)
+summary(gvlma(lineal_model_CO))
+```
+
+##Model7(Dependent variable: PM10)
+
+```{r}
+lineal_model_PM10 <- lm(log(PM10+1) ~ NO+PM2.5+DD+TMP+HR+PRB,data=Canarydataset_training)
+summary(gvlma(lineal_model_PM10))
+```
+
+##Model8(Dependent variable: PM2.5)
+
+```{r}
+lineal_model_PM2.5 <- lm(log(PM2.5+1)~ SO2+PM10+VV+DD+TMP,data=Canarydataset_training)
+summary(gvlma(lineal_model_PM2.5))
+```
+
+#Generalized additive model(GAM)
+
+##Model1(Dependent variable: SO2)
+
+```{r}
+GAM_model_SO2 <- gam(SO2 ~ s(NO)+s(NO2)+s(NOX)+s(O3)+s(PM2.5)+s(VV),data=Canarydataset_training)
+summary(GAM_model_SO2)
+```
+
+##Model2(Dependent variable: NO)
+
+```{r}
+GAM_model_NO <- gam(NO ~ s(NO2)+s(NOX)+s(O3)+s(HR)+s(PRB),data=Canarydataset_training)
+summary(GAM_model_NO)
+```
+
+##Model3(Dependent variable: NO2)
+
+```{r}
+GAM_model_NO2 <- gam(NO2 ~ s(SO2)+s(NO)+s(NOX)+s(O3)+s(HR)+s(PRB),data=Canarydataset_training)
+summary(GAM_model_NO2)
+```
+
+##Model4(Dependent variable: NOX)
+
+```{r}
+GAM_model_NOX <- gam(NOX ~ s(SO2)+s(NO)+s(NO2)+s(O3)+s(HR)+s(PRB),data=Canarydataset_training)
+summary(GAM_model_NOX)
+```
+
+##Model5(Dependent variable: O3)
+
+```{r}
+GAM_model_O3 <- gam(O3 ~ s(SO2)+s(NO)+s(NO2)+s(NOX)+s(HR)+s(PRB),data=Canarydataset_training)
+summary(GAM_model_O3)
+```
+
+##Model6(Dependent variable: CO)
+
+```{r}
+GAM_model_CO <- gam(CO ~ s(NO)+s(NO2)+s(NOX)+s(PM2.5)+s(DD)+s(HR),data=Canarydataset_training)
+summary(GAM_model_CO)
+```
+
+##Model7(Dependent variable: PM10)
+
+```{r}
+GAM_model_PM10 <- gam(PM10 ~ s(NO)+s(PM2.5)+s(DD)+s(TMP)+s(HR)+s(PRB),data=Canarydataset_training)
+summary(GAM_model_PM10)
+```
+
+##Model8(Dependent variable: PM2.5)
+
+```{r}
+GAM_model_PM2.5 <- gam(PM2.5 ~  s(SO2)+s(PM10)+s(VV)+s(DD)+s(TMP),data=Canarydataset_training)
+summary(GAM_model_PM2.5)
+```
+
+#Regression tree
+
+##Model1(Dependent variable: SO2
+
+```{r}
+tree_model_SO2 <- rpart(SO2 ~NO+NO2+NOX+O3+PM2.5+VV,data=Canarydataset_training)
+rpart.plot(tree_model_SO2)
+```
+
+
+##Model2(Dependent variable: NO)
+
+```{r}
+tree_model_NO <- rpart(NO ~NO2+NOX+O3+HR+PRB,data=Canarydataset_training)
+rpart.plot(tree_model_NO)
+```
+
+
+##Model3(Dependent variable: NO2)
+
+```{r}
+tree_model_NO2 <- rpart(NO2 ~SO2+NO+NOX+O3+HR+PRB,data=Canarydataset_training)
+rpart.plot(tree_model_NO2)
+```
+
+
+##Model4(Dependent variable: NOX)
+
+```{r}
+tree_model_NOX <- rpart(NOX ~SO2+NO+NO2+O3+HR+PRB,data=Canarydataset_training)
+rpart.plot(tree_model_NOX)
+```
+
+
+##Model5(Dependent variable: O3)
+
+```{r}
+tree_model_O3 <- rpart(O3 ~SO2+NO+NO2+NOX+HR+PRB,data=Canarydataset_training)
+rpart.plot(tree_model_O3)
+```
+
+
+##Model6(Dependent variable: CO)
+
+```{r}
+tree_model_CO <- rpart(CO ~NO+NO2+NOX+PM2.5+DD+HR,data=Canarydataset_training)
+rpart.plot(tree_model_CO)
+```
+
+
+##Model7(Dependent variable: PM10)
+
+```{r}
+tree_model_PM10 <- rpart(PM10 ~NO+PM2.5+DD+TMP+HR+PRB,data=Canarydataset_training)
+rpart.plot(tree_model_PM10)
+```
+
+
+##Model8(Dependent variable: PM2.5)
+
+```{r}
+tree_model_PM2.5 <- rpart(PM2.5 ~ SO2+PM10+VV+DD+TMP,data=Canarydataset_training)
+rpart.plot(tree_model_PM2.5)
+```
+
+#Model evaluation
+
+##Model1(Dependent variable: SO2)
+
+```{r}
+#Predict values using verification set.
+SO2_predict_GAM <- predict(GAM_model_SO2,newdata = Canarydataset_verification)
+SO2_predict_tree <- predict(tree_model_SO2,newdata = Canarydataset_verification)
+SO2_true <- Canarydataset_verification$SO2
+
+#Using NMSE to evaluate the model performance.
+nmse_SO2_GAM <- mean((SO2_predict_GAM - SO2_true)^2)/mean((mean(SO2_true)-SO2_true)^2)
+nmse_SO2_GAM
+nmse_SO2_tree <-  mean((SO2_predict_tree - SO2_true)^2)/mean((mean(SO2_true)-SO2_true)^2)
+nmse_SO2_tree
+
+#Visualisation of the predictive results of these two models.
+SO2_data <- data.frame(SO2_predict_GAM = SO2_predict_GAM,
+                       SO2_predict_tree = SO2_predict_tree,
+                       SO2_true = SO2_true)
+plot_SO2_GAM <- ggplot(SO2_data,aes(SO2_predict_GAM,SO2_true))+geom_point()+geom_abline(slope=1, intercept =0, color="red")+ggtitle("GAM Model(SO2)")
+plot_SO2_tree <- ggplot(SO2_data,aes(SO2_predict_tree,SO2_true))+geom_point()+geom_abline(slope=1, intercept =0, color="red")+ggtitle("Regression tree Model(SO2)")
+ggplot2.multiplot(plot_SO2_GAM, plot_SO2_tree, cols=2)
+```
+
+##Model2(Dependent variable: NO)
+
+```{r}
+#Predict values using verification set.
+NO_predict_GAM <- predict(GAM_model_NO,newdata = Canarydataset_verification)
+NO_predict_tree <- predict(tree_model_NO,newdata = Canarydataset_verification)
+NO_true <- Canarydataset_verification$NO
+
+#Using NMSE to evaluate the model performance.
+nmse_NO_GAM <- mean((NO_predict_GAM - NO_true)^2)/mean((mean(NO_true)-NO_true)^2)
+nmse_NO_GAM
+nmse_NO_tree <-  mean((NO_predict_tree - NO_true)^2)/mean((mean(NO_true)-NO_true)^2)
+nmse_NO_tree
+
+#Visualisation of the predictive results of these two models.
+NO_data <- data.frame(NO_predict_GAM = NO_predict_GAM,
+                       NO_predict_tree = NO_predict_tree,
+                       NO_true = NO_true)
+plot_NO_GAM <- ggplot(NO_data,aes(NO_predict_GAM,NO_true))+geom_point()+geom_abline(slope=1, intercept =0, color="red")+ggtitle("GAM Model(NO)")
+plot_NO_tree <- ggplot(NO_data,aes(NO_predict_tree,NO_true))+geom_point()+geom_abline(slope=1, intercept =0, color="red")+ggtitle("Regression tree Model(NO)")
+ggplot2.multiplot(plot_NO_GAM, plot_NO_tree, cols=2)
+```
+
+##Model3(Dependent variable: NO2)
+
+```{r}
+#Predict values using verification set.
+NO2_predict_GAM <- predict(GAM_model_NO2,newdata = Canarydataset_verification)
+NO2_predict_tree <- predict(tree_model_NO2,newdata = Canarydataset_verification)
+NO2_true <- Canarydataset_verification$NO2
+
+#Using NMSE to evaluate the model performance.
+nmse_NO2_GAM <- mean((NO2_predict_GAM - NO2_true)^2)/mean((mean(NO2_true)-NO2_true)^2)
+nmse_NO2_GAM
+nmse_NO2_tree <-  mean((NO2_predict_tree - NO2_true)^2)/mean((mean(NO2_true)-NO2_true)^2)
+nmse_NO2_tree
+
+#Visualisation of the predictive results of these two models.
+NO2_data <- data.frame(NO2_predict_GAM = NO2_predict_GAM,
+                       NO2_predict_tree = NO2_predict_tree,
+                       NO2_true = NO2_true)
+plot_NO2_GAM <- ggplot(NO2_data,aes(NO2_predict_GAM,NO2_true))+geom_point()+geom_abline(slope=1, intercept =0, color="red")+ggtitle("GAM Model(NO2)")
+plot_NO2_tree <- ggplot(NO2_data,aes(NO2_predict_tree,NO2_true))+geom_point()+geom_abline(slope=1, intercept =0, color="red")+ggtitle("Regression tree Model(NO2)")
+ggplot2.multiplot(plot_NO2_GAM, plot_NO2_tree, cols=2)
+```
+
+##Model4(Dependent variable: NOX)
+
+```{r}
+#Predict values using verification set.
+NOX_predict_GAM <- predict(GAM_model_NOX,newdata = Canarydataset_verification)
+NOX_predict_tree <- predict(tree_model_NOX,newdata = Canarydataset_verification)
+NOX_true <- Canarydataset_verification$NOX
+
+#Using NMSE to evaluate the model performance.
+nmse_NOX_GAM <- mean((NOX_predict_GAM - NOX_true)^2)/mean((mean(NOX_true)-NOX_true)^2)
+nmse_NOX_GAM
+nmse_NOX_tree <-  mean((NOX_predict_tree - NOX_true)^2)/mean((mean(NOX_true)-NOX_true)^2)
+nmse_NOX_tree
+
+#Visualisation of the predictive results of these two models.
+NOX_data <- data.frame(NOX_predict_GAM = NOX_predict_GAM,
+                       NOX_predict_tree = NOX_predict_tree,
+                       NOX_true = NOX_true)
+plot_NOX_GAM <- ggplot(NOX_data,aes(NOX_predict_GAM,NOX_true))+geom_point()+geom_abline(slope=1, intercept =0, color="red")+ggtitle("GAM Model(NOX)")
+plot_NOX_tree <- ggplot(NOX_data,aes(NOX_predict_tree,NOX_true))+geom_point()+geom_abline(slope=1, intercept =0, color="red")+ggtitle("Regression tree Model(NOX)")
+ggplot2.multiplot(plot_NOX_GAM, plot_NOX_tree, cols=2)
+```
+
+##Model5(Dependent variable: O3)
+
+```{r}
+#Predict values using verification set.
+O3_predict_GAM <- predict(GAM_model_O3,newdata = Canarydataset_verification)
+O3_predict_tree <- predict(tree_model_O3,newdata = Canarydataset_verification)
+O3_true <- Canarydataset_verification$O3
+
+#Using NMSE to evaluate the model performance.
+nmse_O3_GAM <- mean((O3_predict_GAM - O3_true)^2)/mean((mean(O3_true)-O3_true)^2)
+nmse_O3_GAM
+nmse_O3_tree <-  mean((O3_predict_tree - O3_true)^2)/mean((mean(O3_true)-O3_true)^2)
+nmse_O3_tree
+
+#Visualisation of the predictive results of these two models.
+O3_data <- data.frame(O3_predict_GAM = O3_predict_GAM,
+                       O3_predict_tree = O3_predict_tree,
+                       O3_true = O3_true)
+plot_O3_GAM <- ggplot(O3_data,aes(O3_predict_GAM,O3_true))+geom_point()+geom_abline(slope=1, intercept =0, color="red")+ggtitle("GAM Model(O3)")
+plot_O3_tree <- ggplot(O3_data,aes(O3_predict_tree,O3_true))+geom_point()+geom_abline(slope=1, intercept =0, color="red")+ggtitle("Regression tree Model(O3)")
+ggplot2.multiplot(plot_O3_GAM, plot_O3_tree, cols=2)
+```
+
+##Model6(Dependent variable: CO)
+
+```{r}
+#Predict values using verification set.
+CO_predict_GAM <- predict(GAM_model_CO,newdata = Canarydataset_verification)
+CO_predict_tree <- predict(tree_model_CO,newdata = Canarydataset_verification)
+CO_true <- Canarydataset_verification$CO
+
+#Using NMSE to evaluate the model performance.
+nmse_CO_GAM <- mean((CO_predict_GAM - CO_true)^2)/mean((mean(CO_true)-CO_true)^2)
+nmse_CO_GAM
+nmse_CO_tree <-  mean((CO_predict_tree - CO_true)^2)/mean((mean(CO_true)-CO_true)^2)
+nmse_CO_tree
+
+#Visualisation of the predictive results of these two models.
+CO_data <- data.frame(CO_predict_GAM = CO_predict_GAM,
+                       CO_predict_tree = CO_predict_tree,
+                       CO_true = CO_true)
+plot_CO_GAM <- ggplot(CO_data,aes(CO_predict_GAM,CO_true))+geom_point()+geom_abline(slope=1, intercept =0, color="red")+ggtitle("GAM Model(CO)")
+plot_CO_tree <- ggplot(CO_data,aes(CO_predict_tree,CO_true))+geom_point()+geom_abline(slope=1, intercept =0, color="red")+ggtitle("Regression tree Model(CO)")
+ggplot2.multiplot(plot_CO_GAM, plot_CO_tree, cols=2)
+```
+
+##Model7(Dependent variable: PM10)
+
+```{r}
+#Predict values using verification set.
+PM10_predict_GAM <- predict(GAM_model_PM10,newdata = Canarydataset_verification)
+PM10_predict_tree <- predict(tree_model_PM10,newdata = Canarydataset_verification)
+PM10_true <- Canarydataset_verification$PM10
+
+#Using NMSE to evaluate the model performance.
+nmse_PM10_GAM <- mean((PM10_predict_GAM - PM10_true)^2)/mean((mean(PM10_true)-PM10_true)^2)
+nmse_PM10_GAM
+nmse_PM10_tree <-  mean((PM10_predict_tree - PM10_true)^2)/mean((mean(PM10_true)-PM10_true)^2)
+nmse_PM10_tree
+
+#Visualisation of the predictive results of these two models.
+PM10_data <- data.frame(PM10_predict_GAM = PM10_predict_GAM,
+                       PM10_predict_tree = PM10_predict_tree,
+                       PM10_true = PM10_true)
+plot_PM10_GAM <- ggplot(PM10_data,aes(PM10_predict_GAM,PM10_true))+geom_point()+geom_abline(slope=1, intercept =0, color="red")+ggtitle("GAM Model(PM10)")
+plot_PM10_tree <- ggplot(PM10_data,aes(PM10_predict_tree,PM10_true))+geom_point()+geom_abline(slope=1, intercept =0, color="red")+ggtitle("Regression tree Model(PM10)")
+ggplot2.multiplot(plot_PM10_GAM, plot_PM10_tree, cols=2)
+```
+
+##Model8(Dependent variable: PM2.5)
+```{r}
+#Predict values using verification set.
+PM2.5_predict_GAM <- predict(GAM_model_PM2.5,newdata = Canarydataset_verification)
+PM2.5_predict_tree <- predict(tree_model_PM2.5,newdata = Canarydataset_verification)
+PM2.5_true <- Canarydataset_verification$PM2.5
+
+#Using NMSE to evaluate the model performance.
+nmse_PM2.5_GAM <- mean((PM2.5_predict_GAM - PM2.5_true)^2)/mean((mean(PM2.5_true)-PM2.5_true)^2)
+nmse_PM2.5_GAM
+nmse_PM2.5_tree <-  mean((PM2.5_predict_tree - PM2.5_true)^2)/mean((mean(PM2.5_true)-PM2.5_true)^2)
+nmse_PM2.5_tree
+
+#Visualisation of the predictive results of these two models.
+PM2.5_data <- data.frame(PM2.5_predict_GAM = PM2.5_predict_GAM,
+                       PM2.5_predict_tree = PM2.5_predict_tree,
+                       PM2.5_true = PM2.5_true)
+plot_PM2.5_GAM <- ggplot(PM2.5_data,aes(PM2.5_predict_GAM,PM2.5_true))+geom_point()+geom_abline(slope=1, intercept =0, color="red")+ggtitle("GAM Model(PM2.5)")
+plot_PM2.5_tree <- ggplot(PM2.5_data,aes(PM2.5_predict_tree,PM2.5_true))+geom_point()+geom_abline(slope=1, intercept =0, color="red")+ggtitle("Regression tree Model(PM2.5)")
+ggplot2.multiplot(plot_PM2.5_GAM, plot_PM2.5_tree, cols=2)
+```
+
