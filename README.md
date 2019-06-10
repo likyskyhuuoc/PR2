@@ -13,7 +13,7 @@ This activity is realised collectively by two persons: Daura Hernández Díaz an
 <li><strong>Canarydataset.csv</strong>：It contains the cleaned dataset which is used in this study</li>
 <li><strong>PR2 R code.R</strong>：Source code of data analysis</li>
 <li><strong>PR2 Data analysis.rmd</strong>：R Markdown file of the code</li>
-<li><strong>PR2 General Report ver 1.2.docx</strong>：General report of the study</li>
+<li><strong>PR2 General Report ver 1.2.pdf</strong>：General report of the study</li>
 <li><strong>PR2 Implementation Report ver 1.1.pdf</strong>：Implementation report of the study(PDF format)</li>
 <li><strong>PR2 Implementation Report ver 1.1.html</strong>：Implementation report of the study(HTML format)</li>
 </ul>
